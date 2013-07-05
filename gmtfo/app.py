@@ -8,6 +8,7 @@ from db import get_db as db_conn
 from db import close_connection
 app.teardown_appcontext(close_connection)
 
+from random import choice
 from db import get_city_airports
 
 
@@ -19,13 +20,21 @@ def home():
 @app.route("/routes")
 def routes():
 
-    db = db_conn()
-    from random import choice
-    london = choice(get_city_airports(db, "london"))
-    melbourne = choice(get_city_airports(db, "melbourne"))
+    query = request.args.get('query')
+    routes, dates = [], ('2013-01-01', '2013-01-02', '2013-01-03')
+
+    query = query.split(' to ', 1)
+    if len(query) == 2:
+        try:
+            db = db_conn()
+            origin = choice(get_city_airports(db, query[0]))
+            destin = choice(get_city_airports(db, query[1]))
+            routes.append((origin, destin))
+        except:
+            pass
 
     return jsonify(
-        query=request.args.get('query'),
-        routes=((london, melbourne),),
-        dates=('2013-01-01', '2013-01-02', '2013-01-03')
+        query=query,
+        routes=routes,
+        dates=dates
     )
