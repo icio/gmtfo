@@ -16,6 +16,12 @@ def get_city_airports(db, city):
     return c.fetchall()
 
 
+def get_random_airports(db, limit=10):
+    c = db.cursor()
+    c.execute("SELECT * FROM airport ORDER BY RANDOM() LIMIT %d" % limit)
+    return c.fetchall()
+
+
 def connect_to_database():
     db = sqlite3.connect(DATABASE)
     db.row_factory = dict_factory

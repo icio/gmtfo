@@ -1,4 +1,4 @@
-define(["mapbox", "leaflet.d3"], function(L, _)
+define(["mapbox", "leaflet.d3"], function(L, D3Layer)
 {
 	L = window.L; // FIXME Requirejs isn't being setup correctly for mapbox/leaflet
 
@@ -16,6 +16,7 @@ define(["mapbox", "leaflet.d3"], function(L, _)
 		var pathsLayer, pointsLayer;
 
 		function setRoutes(routes) {
+			// Remove old layers
 			if (pathsLayer) {
 				map.removeLayer(pathsLayer);
 				pathsLayer = null;
@@ -30,6 +31,8 @@ define(["mapbox", "leaflet.d3"], function(L, _)
 				return;
 			}
 
+			pathsLayer = new L.LayerGroup().addTo(map);
+
 			var pointsFeature = {
 				"type": "FeatureCollection",
 				"features": []
@@ -38,13 +41,13 @@ define(["mapbox", "leaflet.d3"], function(L, _)
 				"type": "FeatureCollection",
 				"features": []
 			};
+
 			for (var r = 0, R = routes.length; r < R; r++) {
 				var pathCoordinates = [];
 				for (var p = 0, P = routes[r].length; p < P; p++) {
 					var point = routes[r][p],
 					    coordinates = [point.lon, point.lat];
-					point.title = point.name
-
+					point.title = point.name+", "+point.city+", "+point.country;
 					pathCoordinates.push(coordinates);
 					pointsFeature.features.push({
 						"type": "Feature",
@@ -55,20 +58,39 @@ define(["mapbox", "leaflet.d3"], function(L, _)
 						"properties": point
 					});
 				}
-				pathsFeature.features.push({
+
+				// Force RHR
+				pathCoordinates.sort(function(a, b) {
+					var left = a[0] < b[0], above = a[1] > b[1], A=1, B=-1;
+
+					// if (left) {
+					// 	console.log("a", a, "left of", "b", b);
+					// } else {
+					// 	console.log("a", a, "right of", "b", b);
+					// }
+					// if (above) {
+					// 	console.log("a", a, "above", "b", b);
+					// } else {
+					// 	console.log("a", a, "below", "b", b);
+					// }
+
+					var r = (above
+						?(left ? A : A)
+						:(left ? B : B)
+					)
+					// console.log("choosing", r == -1 ? "b":"a");
+					return r;
+				});
+
+				pathsLayer.addLayer(new D3Layer([{
 					"type": "Feature",
 					"geometry": {
 						"type": "LineString",
 						"coordinates": pathCoordinates
 					},
 					"properties": {}
-				});
+				}], {"pathClass": "route"}));
 			}
-
-			pathsLayer = new L.geoJson(pathsFeature, {
-				style: { color: 'white' }
-			});
-			pathsLayer.addTo(map);
 
 			pointsLayer = L.mapbox.markerLayer();
 			pointsLayer.setGeoJSON(pointsFeature);

@@ -82,6 +82,8 @@ L.D3 = L.Class.extend({
 		 var bottomLeft = this._project(this.bounds[0]),
         topRight = this._project(this.bounds[1]);
 
+        // console.log(bottomLeft, topRight, topRight[0] - bottomLeft[0], this._g[0][0].parentNode);
+
     this._el .attr("width", topRight[0] - bottomLeft[0])
         .attr("height", bottomLeft[1] - topRight[1])
         .style("margin-left", bottomLeft[0] + "px")
