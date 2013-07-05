@@ -8,7 +8,7 @@ from db import get_db as db_conn
 from db import close_connection
 app.teardown_appcontext(close_connection)
 
-from random import choice
+from random import sample
 from db import get_city_airports
 
 
@@ -26,10 +26,11 @@ def routes():
     query = query.split(' to ', 1)
     if len(query) == 2:
         try:
-            db = db_conn()
-            origin = choice(get_city_airports(db, query[0]))
-            destin = choice(get_city_airports(db, query[1]))
-            routes.append((origin, destin))
+            db, limit = db_conn(), 5
+            origin = sample(get_city_airports(db, query[0]), limit)
+            destin = sample(get_city_airports(db, query[1]), limit)
+            for o, d in zip(origin, destin):
+                routes.append((o, d))
         except:
             pass
 

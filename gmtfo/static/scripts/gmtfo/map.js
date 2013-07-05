@@ -1,10 +1,10 @@
-define(["mapbox", "leaflet-d3"], function(mapbox, d3Layer)
+define(["mapbox", "leaflet.d3"], function(L, _)
 {
-	mapbox = L.mapbox; // FIXME Requirejs isn't being setup correctly
+	L = window.L; // FIXME Requirejs isn't being setup correctly for mapbox/leaflet
 
 	return function(e, mapId)
 	{
-		var map = mapbox.map(e, mapId, {
+		var map = L.mapbox.map(e, mapId, {
 			'legendControl': false
 		});
 		map.zoomControl.removeFrom(map);
@@ -65,11 +65,12 @@ define(["mapbox", "leaflet-d3"], function(mapbox, d3Layer)
 				});
 			}
 
-			pathsLayer = new d3Layer(pathsFeature);
-			console.log(pathsLayer, pathsFeature);
+			pathsLayer = new L.geoJson(pathsFeature, {
+				style: { color: 'white' }
+			});
 			pathsLayer.addTo(map);
 
-			pointsLayer = mapbox.markerLayer();
+			pointsLayer = L.mapbox.markerLayer();
 			pointsLayer.setGeoJSON(pointsFeature);
 			pointsLayer.addTo(map);
 		}
