@@ -1,5 +1,7 @@
-define(["mapbox"], function(mapbox) {
+define(["mapbox", "leaflet-d3"], function(mapbox, d3Layer)
+{
 	mapbox = L.mapbox; // FIXME Requirejs isn't being setup correctly
+
 	return function(e, mapId)
 	{
 		var map = mapbox.map(e, mapId, {
@@ -11,47 +13,65 @@ define(["mapbox"], function(mapbox) {
 		// map.doubleClickZoom.disable();
 		// map.scrollWheelZoom.disable();
 
-		var routesLayer = mapbox.markerLayer();
-		routesLayer.addTo(map);
-		routesLayer.setGeoJSON({
-		    type: "FeatureCollection",
-		    features: [{
-		        type: "Feature",
-		        geometry: {
-		            type: "Point",
-		            coordinates: [102.0, 0.5]
-		        },
-		        properties: { }
-		    }]
-		});
+		var pathsLayer, pointsLayer;
 
 		function setRoutes(routes) {
+			if (pathsLayer) {
+				map.removeLayer(pathsLayer);
+				pathsLayer = null;
+			}
+			if (pointsLayer) {
+				map.removeLayer(pointsLayer);
+				pointsLayer = null
+			}
+
 			// Handle empty responses
 			if (!routes || !routes.length) {
 				return;
 			}
 
-			var feature = {
+			var pointsFeature = {
+				"type": "FeatureCollection",
+				"features": []
+			};
+			var pathsFeature = {
 				"type": "FeatureCollection",
 				"features": []
 			};
 			for (var r = 0, R = routes.length; r < R; r++) {
+				var pathCoordinates = [];
 				for (var p = 0, P = routes[r].length; p < P; p++) {
-					var point = routes[r][p];
+					var point = routes[r][p],
+					    coordinates = [point.lon, point.lat];
 					point.title = point.name
-					feature.features.push({
+
+					pathCoordinates.push(coordinates);
+					pointsFeature.features.push({
 						"type": "Feature",
 						"geometry": {
 							"type": "Point",
-							"coordinates": [point.lon, point.lat]
+							"coordinates": coordinates
 						},
 						"properties": point
 					});
 				}
+				pathsFeature.features.push({
+					"type": "Feature",
+					"geometry": {
+						"type": "LineString",
+						"coordinates": pathCoordinates
+					},
+					"properties": {}
+				});
 			}
 
-			console.log(feature);
-			routesLayer.setGeoJSON(feature);
+			pathsLayer = new d3Layer(pathsFeature);
+			console.log(pathsLayer, pathsFeature);
+			pathsLayer.addTo(map);
+
+			pointsLayer = mapbox.markerLayer();
+			pointsLayer.setGeoJSON(pointsFeature);
+			pointsLayer.addTo(map);
 		}
 
 		return {
