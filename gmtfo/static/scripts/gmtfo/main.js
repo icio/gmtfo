@@ -7,9 +7,43 @@
 //           /____/                          
 //
 
-define(["jquery", "./map"], function($, map)
+define(["jquery", "./map"], function($, Map)
 {
-	$('h1').css('color', 'red');
-	map('map');
-	console.log(map);
+	$.fn.livechange = function(callback) {
+		this.each(function() {
+			var elem = $(this);
+			elem.data('oldVal', elem.val());
+			elem.bind("propertychange keyup input paste", function(event){
+				if (elem.data('oldVal') != elem.val()) {
+					elem.data('oldVal', elem.val());
+					callback.call(this);
+				}
+			});
+		});
+		return this;
+	};
+
+	var map;
+	var markerLayer;
+
+	function setState(state) {
+		console.log(state);
+		map.setRoutes(state.routes)
+	}
+
+	$(function() {
+		map = Map('map', 'icio.map-wdu4ouxy');
+
+		var activeReq;
+		$('#query').livechange(function() {
+			if (activeReq) activeReq.abort();
+			var query = $(this).val();
+			if (!query) return;
+
+			activeReq = $.get('/routes', {'query': query}, function(resp) {
+				setState(resp);
+				activeReq = null;
+			});
+		}).focus();
+	});
 });

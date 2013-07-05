@@ -5,7 +5,7 @@ requirejs.config({
 		"angular": "angular-1.0.7.min",
 		"bootstrap": "bootstrap-2.3.2.min",
 		"lessjs": "less-1.4.1.min",
-		"mapbox": "mapbox-1.0.2.min"
+		"mapbox": "mapbox-1.2.0.min"
 	},
 	shim: {
 		// External lib setup
