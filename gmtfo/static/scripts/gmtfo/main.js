@@ -7,7 +7,9 @@
 //           /____/                          
 //
 
-define(["jquery"], function($)
+define(["jquery", "./map"], function($, map)
 {
 	$('h1').css('color', 'red');
+	map('map');
+	console.log(map);
 });
