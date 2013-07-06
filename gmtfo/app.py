@@ -73,11 +73,10 @@ def routes():
             r.append(a)
         routes.append(r)
 
-    print routes
-
     resp = {
         'query': q,
         # 'parsed_query': query,
+        'routes': routes,
         'checkpoints': query.get('checkpoints')
     }
 
