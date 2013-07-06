@@ -14,27 +14,41 @@ html, body {
 }
 
 header {
-	position: relative;
-	margin: 0 auto;
+	position: absolute;
+	bottom: 0;
+	width: 100%;
 	z-index: 2;
 
-	>div {
-		margin-top: 30px;
+	#search {
+		position: relative;
+		height: 45px;
+		margin: 30px;
 		padding: 10px;
-		margin-left: -20px;
-		margin-right: -20px;
-		background-color: #37354D;
-		border: 10px solid rgba(255,255,255,0.6);
+		background: linear-gradient(to top, whitesmoke, white);
 		background-clip: padding-box;
-		border-radius: 5px;
+		border: 3px solid rgba(255,255,255,0.6);
+		border-radius: 1px;
+
+		h1 {
+			margin: 0 0 0 5px;
+			float: left;
+			color: #37354D;
+			text-shadow: white 0 1px 0;
+		}
+		#query {
+			display: block;
+			position: absolute;
+			width: auto;
+			top: 16px;
+			left: 180px;
+			right: 15px;	
+		}
 	}
-	h1 {
-		margin: 0 30px 0 0;
-		float: left;
-	}
-	input {
-		margin-top: 5px;
-		width: 750px;
+	#calendars {
+		background: #131129;
+		display: block;
+		height: 0;
+		width: 100%;
 	}
 }
 
