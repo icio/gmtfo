@@ -1,4 +1,4 @@
 from sys import argv
-from gmtfo import app
+from gmtfo.app import app
 
 app.run(debug="-d" in argv)

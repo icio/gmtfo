@@ -117,7 +117,7 @@ def build_index(index_dir):
         name = "%s, %s, %s" % (airport['name'], airport['city'],
                                airport['country'])
         writer.add_document(type=0, id=airport['id'], name=name,
-                            code=airport['iata_faa'])
+                            code=airport['code'])
     writer.commit()
 
 
